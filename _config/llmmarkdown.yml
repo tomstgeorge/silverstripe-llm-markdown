@@ -1,0 +1,20 @@
+---
+Name: llmmarkdown
+After: staticpublishqueue
+---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\StaticPublishQueue\Publisher:
+    class: TomStGeorge\LLMMarkdown\Publisher\LLMMarkdownPublisher
+  SilverStripe\StaticPublishQueue\Job\GenerateStaticCacheJob:
+    class: TomStGeorge\LLMMarkdown\Job\GenerateStaticCacheJob
+  SilverStripe\StaticPublishQueue\Job\DeleteStaticCacheJob:
+    class: TomStGeorge\LLMMarkdown\Job\DeleteStaticCacheJob
+  SilverStripe\StaticPublishQueue\Job\StaticCacheFullBuildJob:
+    class: TomStGeorge\LLMMarkdown\Job\StaticCacheFullBuildJob
+
+# Regenerate llm.txt at the end of every static publish queue job (default: true).
+# Set to false to disable, e.g. if you regenerate llm.txt only via the build task or a custom schedule.
+TomStGeorge\LLMMarkdown\Publisher\LLMMarkdownPublisher:
+  regenerate_llm_txt_after_job: true
+  extensions:
+    - TomStGeorge\LLMMarkdown\Extension\PublisherMarkdownExtension
