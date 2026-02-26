@@ -28,26 +28,39 @@ This module extends [silverstripe/staticpublishqueue](https://github.com/silvers
 
 If you serve static cache from `public/index.php` (or similar), you can use the module’s static request handler so that clients that request Markdown get the `.md` file.
 
-1. **Cache directory**: Determine the path your static publisher uses (e.g. `public/cache` or `BASE_PATH . '/cache'`).
+Use the **same cache directory as StaticPublishQueue**: get it from the Publisher after booting the kernel, then run the module’s static handler before handling the request. This ensures the path matches the publisher (including any custom `destFolder` config).
 
-2. **Wire the handler** in `public/index.php` before the normal Silverstripe bootstrap:
+**Wire the handler** in `public/index.php` after booting the kernel but before handling the request:
 
-   ```php
-   require __DIR__ . '/../vendor/autoload.php';
+```php
+// After require autoload.php:
+$request = HTTPRequestBuilder::createFromEnvironment();
+$kernel = new CoreKernel(BASE_PATH);
+$kernel->boot();
 
-   $cacheDir = defined('PUBLIC_PATH') ? PUBLIC_PATH . '/cache' : (__DIR__ . '/cache');
-   $handler = require __DIR__ . '/../vendor/tomstgeorge/silverstripe-llm-markdown/includes/staticrequesthandler.php';
-   if ($handler($cacheDir)) {
-       exit;
-   }
+// Static cache: serve .md for Accept text/markdown|text/plain, else .html
+$publisher = \SilverStripe\StaticPublishQueue\Publisher::singleton();
+if ($publisher instanceof \SilverStripe\StaticPublishQueue\Publisher\FilesystemPublisher) {
+    $cacheDir = $publisher->getDestPath();
+    $staticHandlerPath = __DIR__ . '/../vendor/tomstgeorge/silverstripe-llm-markdown/includes/staticrequesthandler.php';
+    if (is_file($staticHandlerPath)) {
+        $staticHandler = require $staticHandlerPath;
+        if ($staticHandler($cacheDir)) {
+            exit;
+        }
+    }
+}
 
-   // ... rest of index.php (build request, run app, output response)
-   ```
+$app = new HTTPApplication($kernel);
+$response = $app->handle($request);
+$response->output();
+```
 
-3. **Behaviour**:
-   - If the request has `Accept: text/markdown` or `Accept: text/plain` and a `.md` file exists for the URL, the handler serves it and exits.
-   - Otherwise it delegates to the staticpublishqueue handler (serves `.html` or returns false).
-   - The `bypassStaticCache` cookie is respected (handler returns false).
+**Behaviour**:
+
+- If the request has `Accept: text/markdown` or `Accept: text/plain` and a `.md` file exists for the URL, the handler serves it and exits.
+- Otherwise it delegates to the staticpublishqueue handler (serves `.html` or returns false).
+- The `bypassStaticCache` cookie is respected (handler returns false).
 
 ## Regenerating llm.txt
 
@@ -70,7 +83,13 @@ Same path convention as staticpublishqueue, with an extra `.md` (and optionally 
 
 ## Requirements summary
 
+- PHP ^8.1
 - Silverstripe Framework ^5.0, CMS ^5.0
 - silverstripe/staticpublishqueue ^6.3
-- league/html-to-markdown ^5.1  
+- league/html-to-markdown ^5.1
+
 All are required in the **project** `composer.json`; the module lists them so Composer installs them at the project level.
+
+## See also
+
+- [Main README](../README.md) — installation (including path repository), full `index.php` example, and [Development](../README.md#development) (tests, phpcs, phpstan).

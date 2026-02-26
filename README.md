@@ -125,7 +125,13 @@ if ($publisher instanceof \TomStGeorge\LLMMarkdown\Publisher\LLMMarkdownPublishe
 
 ## Documentation
 
-- [Documentation](docs/en/README.md)
+- [Documentation](docs/en/README.md) — detailed overview, how it works, and configuration.
+
+## Development
+
+- **Tests**: Run the test suite from the project root (with the module in `vendor/`): `vendor/bin/phpunit`. The module reserves `tests/php/` for unit and integration tests.
+- **Code style**: `vendor/bin/phpcs src/ tests/`
+- **Static analysis**: `vendor/bin/phpstan analyse -c phpstan.neon.dist` (run from the module directory when using a path repository).
 
 ## License
 
