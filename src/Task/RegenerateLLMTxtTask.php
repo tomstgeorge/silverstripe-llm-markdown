@@ -3,7 +3,10 @@
 namespace TomStGeorge\LLMMarkdown\Task;
 
 use SilverStripe\Dev\BuildTask;
+use SilverStripe\PolyExecution\PolyOutput;
 use SilverStripe\StaticPublishQueue\Publisher;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 use TomStGeorge\LLMMarkdown\Publisher\LLMMarkdownPublisher;
 
 /**
@@ -12,18 +15,17 @@ use TomStGeorge\LLMMarkdown\Publisher\LLMMarkdownPublisher;
  */
 class RegenerateLLMTxtTask extends BuildTask
 {
-    protected $title = 'Regenerate llm.txt from static Markdown cache';
+    protected string $title = 'Regenerate llm.txt from static Markdown cache';
 
-    private static string $segment = 'RegenerateLLMTxtTask';
-
-    public function run($request): void
+    protected function execute(InputInterface $input, PolyOutput $output): int
     {
         $publisher = Publisher::singleton();
         if (!($publisher instanceof LLMMarkdownPublisher)) {
-            echo 'Publisher is not LLMMarkdownPublisher; llm.txt not available.';
-            return;
+            $output->writeln('Publisher is not LLMMarkdownPublisher; llm.txt not available.');
+            return Command::FAILURE;
         }
         $ok = $publisher->regenerateLLMTxt();
-        echo $ok ? 'llm.txt regenerated.' : 'Failed to write llm.txt.';
+        $output->writeln($ok ? 'llm.txt regenerated.' : 'Failed to write llm.txt.');
+        return $ok ? Command::SUCCESS : Command::FAILURE;
     }
 }

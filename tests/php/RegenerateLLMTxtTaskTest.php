@@ -9,12 +9,6 @@ use TomStGeorge\LLMMarkdown\Task\RegenerateLLMTxtTask;
 
 class RegenerateLLMTxtTaskTest extends SapphireTest
 {
-    public function testTaskHasExpectedSegment(): void
-    {
-        $task = new RegenerateLLMTxtTask();
-        $this->assertSame('RegenerateLLMTxtTask', $task->getSegment());
-    }
-
     public function testPublisherIsLLMMarkdownPublisher(): void
     {
         $publisher = Publisher::singleton();
