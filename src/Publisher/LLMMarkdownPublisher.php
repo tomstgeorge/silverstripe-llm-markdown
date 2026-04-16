@@ -3,11 +3,8 @@
 namespace TomStGeorge\LLMMarkdown\Publisher;
 
 use SilverStripe\Assets\Filesystem;
-use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\StaticPublishQueue\Publisher\FilesystemPublisher;
-
-use function SilverStripe\StaticPublishQueue\URLtoPath;
 
 /**
  * FilesystemPublisher that also purges the .md file when a URL is purged,
@@ -43,7 +40,7 @@ class LLMMarkdownPublisher extends FilesystemPublisher
     {
         $result = parent::purgeURL($url);
         if (is_array($result) && !empty($result['path'])) {
-            $path = URLtoPath($url, Director::absoluteBaseURL(), $this->config()->get('domain_based_caching'));
+            $path = $this->URLtoPath($url);
             if ($path) {
                 $this->deleteFromPath($path . '.md');
             }
