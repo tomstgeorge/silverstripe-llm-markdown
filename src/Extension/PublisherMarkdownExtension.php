@@ -5,6 +5,7 @@ namespace TomStGeorge\LLMMarkdown\Extension;
 use League\HTMLToMarkdown\HtmlConverter;
 use SilverStripe\Assets\Filesystem;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extension;
 use SilverStripe\StaticPublishQueue\Publisher\FilesystemPublisher;
 
@@ -16,6 +17,8 @@ use function SilverStripe\StaticPublishQueue\URLtoPath;
  */
 class PublisherMarkdownExtension extends Extension
 {
+    use Configurable;
+
     /**
      * When true (default), Markdown files are generated from the HTML response.
      * Set to false in YAML to disable.

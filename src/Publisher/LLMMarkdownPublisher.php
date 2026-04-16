@@ -3,6 +3,7 @@
 namespace TomStGeorge\LLMMarkdown\Publisher;
 
 use SilverStripe\Assets\Filesystem;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\StaticPublishQueue\Publisher\FilesystemPublisher;
 
 use function SilverStripe\StaticPublishQueue\URLtoPath;
@@ -13,6 +14,8 @@ use function SilverStripe\StaticPublishQueue\URLtoPath;
  */
 class LLMMarkdownPublisher extends FilesystemPublisher
 {
+    use Configurable;
+
     /**
      * When true (default), llm.txt is regenerated at the end of every static publish queue job
      * (GenerateStaticCacheJob, DeleteStaticCacheJob, StaticCacheFullBuildJob).
