@@ -35,9 +35,6 @@ class PublisherMarkdownExtension extends Extension
      * Called by Publisher::publishURL after the HTML response is generated.
      * Writes the same path with .md extension using HTML-to-Markdown conversion.
      *
-     * @param string $url
-     * @param HTTPResponse $response
-     */
     public function onAfterGeneratePageResponse($url, $response): void
     {
         if (!$this->config()->get('publish_markdown')) {
@@ -49,7 +46,9 @@ class PublisherMarkdownExtension extends Extension
             return;
         }
 
-        $baseUrl = Director::absoluteBaseURL();
+        $baseUrl = Director::baseURL();
+        $this->log(sprintf('LLMMarkdown: Processing URL "%s" (BaseURL: "%s")', $url, $baseUrl));
+
         $path = URLtoPath(
             $url,
             $baseUrl,
@@ -57,7 +56,7 @@ class PublisherMarkdownExtension extends Extension
         );
 
         if (!$path) {
-            $this->log(sprintf('LLMMarkdown: Skipping "%s" - URLtoPath returned empty string (BaseURL: "%s")', $url, $baseUrl));
+            $this->log(sprintf('LLMMarkdown: Skipping "%s" - URLtoPath returned false/empty (BaseURL: "%s")', $url, $baseUrl));
             return;
         }
 
