@@ -17,6 +17,15 @@ use function SilverStripe\StaticPublishQueue\URLtoPath;
 class PublisherMarkdownExtension extends Extension
 {
     /**
+     * When true (default), Markdown files are generated from the HTML response.
+     * Set to false in YAML to disable.
+     *
+     * @var bool
+     * @config
+     */
+    private static $publish_markdown = true;
+
+    /**
      * Called by Publisher::publishURL after the HTML response is generated.
      * Writes the same path with .md extension using HTML-to-Markdown conversion.
      *
@@ -25,6 +34,10 @@ class PublisherMarkdownExtension extends Extension
      */
     public function onAfterGeneratePageResponse($url, $response): void
     {
+        if (!$this->config()->get('publish_markdown')) {
+            return;
+        }
+
         $publisher = $this->getOwner();
         if (!$publisher instanceof FilesystemPublisher) {
             return;

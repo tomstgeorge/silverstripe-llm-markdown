@@ -24,6 +24,15 @@ class LLMMarkdownPublisher extends FilesystemPublisher
     private static $regenerate_llm_txt_after_job = true;
 
     /**
+     * When true (default), HTML cache files are written to the filesystem.
+     * Set to false in YAML to disable and only generate Markdown/llm.txt.
+     *
+     * @var bool
+     * @config
+     */
+    private static $publish_html = true;
+
+    /**
      * Purge HTML, PHP and MD cache files for the given URL.
      */
     public function purgeURL($url)
@@ -36,6 +45,28 @@ class LLMMarkdownPublisher extends FilesystemPublisher
             }
         }
         return $result;
+    }
+
+    /**
+     * Override to conditionally skip HTML publishing.
+     */
+    protected function publishPage($response, $url)
+    {
+        if (!$this->config()->get('publish_html')) {
+            return true;
+        }
+        return parent::publishPage($response, $url);
+    }
+
+    /**
+     * Override to conditionally skip HTML redirection publishing.
+     */
+    protected function publishRedirect($response, $url)
+    {
+        if (!$this->config()->get('publish_html')) {
+            return true;
+        }
+        return parent::publishRedirect($response, $url);
     }
 
     /**
