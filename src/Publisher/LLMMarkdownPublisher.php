@@ -3,6 +3,7 @@
 namespace TomStGeorge\LLMMarkdown\Publisher;
 
 use SilverStripe\Assets\Filesystem;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\StaticPublishQueue\Publisher\FilesystemPublisher;
 
@@ -42,7 +43,7 @@ class LLMMarkdownPublisher extends FilesystemPublisher
     {
         $result = parent::purgeURL($url);
         if (is_array($result) && !empty($result['path'])) {
-            $path = URLtoPath($url, BASE_URL, $this->config()->get('domain_based_caching'));
+            $path = URLtoPath($url, Director::absoluteBaseURL(), $this->config()->get('domain_based_caching'));
             if ($path) {
                 $this->deleteFromPath($path . '.md');
             }
@@ -80,7 +81,7 @@ class LLMMarkdownPublisher extends FilesystemPublisher
         if ($dir === null) {
             $dir = $this->getDestPath();
         }
-        if (!is_dir($dir)) {
+        if ($dir && !is_dir($dir)) {
             return [];
         }
         return parent::getPublishedURLs($dir, $result);

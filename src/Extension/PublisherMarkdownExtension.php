@@ -4,10 +4,13 @@ namespace TomStGeorge\LLMMarkdown\Extension;
 
 use League\HTMLToMarkdown\HtmlConverter;
 use SilverStripe\Assets\Filesystem;
+use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extension;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\StaticPublishQueue\Publisher\FilesystemPublisher;
+use Psr\Log\LoggerInterface;
 
 use function SilverStripe\StaticPublishQueue\URLtoPath;
 
@@ -46,12 +49,20 @@ class PublisherMarkdownExtension extends Extension
             return;
         }
 
+        $baseUrl = Director::absoluteBaseURL();
         $path = URLtoPath(
             $url,
-            BASE_URL,
+            $baseUrl,
             (bool) $publisher->config()->get('domain_based_caching')
         );
-        if (!$path || $response->getStatusCode() >= 400) {
+
+        if (!$path) {
+            $this->log(sprintf('LLMMarkdown: Skipping "%s" - URLtoPath returned empty string (BaseURL: "%s")', $url, $baseUrl));
+            return;
+        }
+
+        if ($response->getStatusCode() >= 400) {
+            $this->log(sprintf('LLMMarkdown: Skipping "%s" - Status code %d', $url, $response->getStatusCode()));
             return;
         }
 
@@ -67,6 +78,7 @@ class PublisherMarkdownExtension extends Extension
         }
 
         $this->saveMarkdownToPath($publisher, $markdown, $path . '.md');
+        $this->log(sprintf('LLMMarkdown: Saved Markdown for "%s" to "%s.md"', $url, $path));
     }
 
     /**
@@ -85,5 +97,10 @@ class PublisherMarkdownExtension extends Extension
         @unlink($temporaryPath);
 
         return $copyResult;
+    }
+
+    protected function log(string $message): void
+    {
+        Injector::inst()->get(LoggerInterface::class)->info($message);
     }
 }
