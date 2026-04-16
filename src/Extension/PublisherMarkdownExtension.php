@@ -46,7 +46,7 @@ class PublisherMarkdownExtension extends Extension
             return;
         }
 
-        $baseUrl = Director::baseURL();
+        $baseUrl = Director::absoluteBaseURL();
         $this->log(sprintf('LLMMarkdown: Processing URL "%s" (BaseURL: "%s")', $url, $baseUrl));
 
         $path = URLtoPath(
@@ -59,6 +59,8 @@ class PublisherMarkdownExtension extends Extension
             $this->log(sprintf('LLMMarkdown: Skipping "%s" - URLtoPath returned false/empty (BaseURL: "%s")', $url, $baseUrl));
             return;
         }
+
+        $this->log(sprintf('LLMMarkdown: Resolved path "%s" for URL "%s"', $path, $url));
 
         if ($response->getStatusCode() >= 400) {
             $this->log(sprintf('LLMMarkdown: Skipping "%s" - Status code %d', $url, $response->getStatusCode()));

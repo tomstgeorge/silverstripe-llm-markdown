@@ -43,7 +43,7 @@ class LLMMarkdownPublisher extends FilesystemPublisher
     {
         $result = parent::purgeURL($url);
         if (is_array($result) && !empty($result['path'])) {
-            $path = URLtoPath($url, Director::baseURL(), $this->config()->get('domain_based_caching'));
+            $path = URLtoPath($url, Director::absoluteBaseURL(), $this->config()->get('domain_based_caching'));
             if ($path) {
                 $this->deleteFromPath($path . '.md');
             }
