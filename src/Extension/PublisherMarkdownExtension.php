@@ -34,7 +34,7 @@ class PublisherMarkdownExtension extends Extension
     /**
      * Called by Publisher::publishURL after the HTML response is generated.
      * Writes the same path with .md extension using HTML-to-Markdown conversion.
-     *
+     */
     public function onAfterGeneratePageResponse($url, $response): void
     {
         if (!$this->config()->get('publish_markdown')) {
