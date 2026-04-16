@@ -73,6 +73,20 @@ class LLMMarkdownPublisher extends FilesystemPublisher
     }
 
     /**
+     * Override to handle cases where the cache directory does not yet exist.
+     */
+    public function getPublishedURLs($dir = null, &$result = [])
+    {
+        if ($dir === null) {
+            $dir = $this->getDestPath();
+        }
+        if (!is_dir($dir)) {
+            return [];
+        }
+        return parent::getPublishedURLs($dir, $result);
+    }
+
+    /**
      * Regenerate llm.txt in the cache root from all .md files (one section per URL).
      */
     public function regenerateLLMTxt(): bool
