@@ -4,6 +4,7 @@ namespace TomStGeorge\LLMMarkdown\Extension;
 
 use League\HTMLToMarkdown\HtmlConverter;
 use SilverStripe\Assets\Filesystem;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extension;
 use SilverStripe\StaticPublishQueue\Publisher\FilesystemPublisher;
@@ -73,6 +74,8 @@ class PublisherMarkdownExtension extends Extension
             return;
         }
 
+        $markdown = $this->absolutifyLinks($markdown);
+
         $this->saveMarkdownToPath($publisher, $markdown, $path . '.md');
     }
 
@@ -112,6 +115,21 @@ class PublisherMarkdownExtension extends Extension
         }
 
         return $inner;
+    }
+
+    /**
+     * Replace root-relative URLs in markdown with absolute URLs using the site base URL.
+     * Handles both link targets [text](/path) and image srcs ![alt](/path).
+     */
+    protected function absolutifyLinks(string $markdown): string
+    {
+        $base = rtrim(Director::absoluteBaseURL(), '/');
+        // Match markdown links/images with root-relative href (starts with /)
+        return preg_replace_callback(
+            '/(\[(?:[^\]]*)\]\()(\/[^)]*\))/',
+            fn($m) => $m[1] . $base . $m[2],
+            $markdown
+        ) ?? $markdown;
     }
 
     /**
