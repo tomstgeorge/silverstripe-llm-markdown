@@ -45,6 +45,7 @@ class LLMMarkdownPublisher extends FilesystemPublisher
                 $this->deleteFromPath($path . '.md');
             }
         }
+        $this->extend('onAfterPurgeURL', $url);
         return $result;
     }
 
