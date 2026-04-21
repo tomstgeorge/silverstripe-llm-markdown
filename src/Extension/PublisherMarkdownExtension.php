@@ -75,6 +75,8 @@ class PublisherMarkdownExtension extends Extension
         }
 
         $markdown = $this->absolutifyLinks($markdown);
+        $absoluteUrl = Director::absoluteURL($url);
+        $markdown = "Link to this page on website: " . $absoluteUrl . "\n\n" . $markdown;
 
         $this->saveMarkdownToPath($publisher, $markdown, $path . '.md');
     }
