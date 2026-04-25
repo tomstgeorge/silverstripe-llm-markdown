@@ -5,10 +5,10 @@
     "keywords": ["silverstripe", "CMS", "static", "markdown", "llm", "AI"],
     "license": "BSD-3-Clause",
     "require": {
-        "php": "^8.1",
-        "silverstripe/framework": "^5.0",
-        "silverstripe/cms": "^5.0",
-        "silverstripe/staticpublishqueue": "^6.3",
+        "php": "^8.3",
+        "silverstripe/framework": "^6.0",
+        "silverstripe/cms": "^6.0",
+        "silverstripe/staticpublishqueue": "^7.0",
         "league/html-to-markdown": "^5.1"
     },
     "require-dev": {
